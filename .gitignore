@@ -12,6 +12,6 @@
 /.web-server-pid
 ###< symfony/web-server-bundle ###
 
-.env
-.idea
-.idea/*
+/.env
+/.idea
+/.idea/
