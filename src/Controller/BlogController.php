@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class BlogController
@@ -41,11 +41,21 @@ class BlogController extends AbstractController
 	];
 
 	/**
-	 * @Route("/", name="blog_list")
+	 * @Route("/{page}", name="blog_list", defaults={"page" : 1})
 	 */
-	public function list()
+	public function list($page, Request $request)
 	{
-		return new JsonResponse(self::POSTS);
+		$limit = $request->get('limit',10);
+		return $this->json(
+			[
+				'page'=> $page,
+				'lmit'=> $limit,
+				'data'=> array_map(function ($item){
+					return $this->generateUrl('blog_by_slug', ['slug'=>$item['slug']]);
+				},self::POSTS)
+			]
+
+		);
 	}
 
 	/**
@@ -53,7 +63,7 @@ class BlogController extends AbstractController
 	 */
 	public function post($id)
 	{
-		return new JsonResponse(
+		return $this->json(
 			self::POSTS [array_search($id, array_column(self::POSTS, 'id'))]
 		);
 	}
@@ -63,7 +73,7 @@ class BlogController extends AbstractController
 	 */
 	public function postBySlug($slug)
 	{
-		return new JsonResponse(
+		return $this->json(
 			self::POSTS [array_search($slug, array_column(self::POSTS, 'slug'))]
 		);
 	}
