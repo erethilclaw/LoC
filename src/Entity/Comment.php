@@ -6,7 +6,10 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *     itemOperations={"get"},
+ *     collectionOperations={"get"}
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
  */
 class Comment
@@ -33,6 +36,13 @@ class Comment
 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	private $author;
+
+	/**
+	 * @ORM\ManyToOne(targetEntity="App\Entity\BlogPost", inversedBy="comments")
+	 * @ORM\JoinColumn(nullable=false)
+	 */
+	private $blogPost;
+
 
     public function getId(): ?int
     {
@@ -63,21 +73,29 @@ class Comment
         return $this;
     }
 
-	/**
-	 * @return User
-	 */
 	public function getAuthor(): User
 	{
 		return $this->author;
 	}
 
-	/**
-	 * @param User $author
-	 */
 	public function setAuthor(User $author ): self
 	{
 		$this->author = $author;
 
 		return $this;
 	}
+
+	public function getBlogPost(): BlogPost
+	{
+		return $this->blogPost;
+	}
+
+	public function setBlogPost(BlogPost $blogPost ): self
+	{
+		$this->blogPost = $blogPost;
+
+		return $this;
+	}
+
+
 }
