@@ -6,8 +6,10 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiResource(
@@ -18,6 +20,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     }
  * )
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @UniqueEntity(fields={"username"})
+ * @UniqueEntity(fields={"email"})
  */
 class User implements UserInterface
 {
@@ -32,22 +36,44 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"read"})
+     * @Assert\NotBlank()
+     * @Assert\Length(min="6", max="225")
      */
     private $username;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Length(min="7", max="255")
+     * @Assert\Regex(
+     *     pattern="/(?=.*[A-Z])(?=.*[0-9]).{7,}/",
+     *     message="Password must be 7 chars min, contain a digit, upper case and lower case letter"
+     * )
      */
     private $password;
+
+	/**
+	 * @Assert\Expression(
+	 *     "this.getPassword() === this.getRetypedPassword()",
+	 *     message="Passwords don't match"
+	 * )
+	 * @Assert\NotBlank()
+	 */
+    private $retypedPassword;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"read"})
+     * @Assert\NotBlank()
+     * @Assert\Length(min="5", max="225")
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Email()
+     * @Assert\Length(min="6",max="255")
      */
     private $email;
 
@@ -103,6 +129,16 @@ class User implements UserInterface
 
         return $this;
     }
+
+	public function getRetypedPassword()
+	{
+		return $this->retypedPassword;
+	}
+
+	public function setRetypedPassword( $retypedPassword ): void
+	{
+		$this->retypedPassword = $retypedPassword;
+	}
 
     public function getName(): ?string
     {
