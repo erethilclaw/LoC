@@ -59,6 +59,7 @@ class Comment implements AuthoredEntityInterface, CreatedDateEntityInterface
 	/**
 	 * @ORM\ManyToOne(targetEntity="App\Entity\BlogPost", inversedBy="comments")
 	 * @ORM\JoinColumn(nullable=false)
+	 * @Groups({"post"})
 	 */
 	private $blogPost;
 
