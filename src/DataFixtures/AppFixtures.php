@@ -22,6 +22,45 @@ class AppFixtures extends Fixture
 	 */
 	private $faker;
 
+	private const USERS = [
+		[
+			'username'=>'admin',
+			'name'=>'Claw',
+			'mail'=>'ernest.riccetto@gmail.com',
+			'password'=>'12345'
+		],
+		[
+			'username'=>'sylvia',
+			'name'=>'Sylvia',
+			'mail'=>'mermaid@gmail.com',
+			'password'=>'12345'
+		],
+		[
+			'username'=>'marta_flames',
+			'name'=>'MartaFlames',
+			'mail'=>'MartaFlameso@gmail.com',
+			'password'=>'12345'
+		],
+		[
+			'username'=>'cosmodaughter',
+			'name'=>'Cosmodaughter',
+			'mail'=>'Cosmodaughter@gmail.com',
+			'password'=>'12345'
+		],
+		[
+			'username'=>'gipsy_sereia',
+			'name'=>'Sofia',
+			'mail'=>'gipsy_sereia@gmail.com',
+			'password'=>'12345'
+		],
+		[
+			'username'=>'tribal_biker',
+			'name'=>'Nuur',
+			'mail'=>'Nuur@gmail.com',
+			'password'=>'12345'
+		]
+	];
+
 	public function __construct(UserPasswordEncoderInterface $password_encoder) {
 		$this->passwordEncoder = $password_encoder;
 		$this->faker = \Faker\Factory::create();
@@ -36,74 +75,25 @@ class AppFixtures extends Fixture
 
     public function loadUsers(ObjectManager $manager)
     {
-	    $author = new User();
-	    $author->setEmail('ernest.riccetto@gmail.com');
-	    $author->setName('Ernest');
-	    $author->setUsername('Sr Claw');
-	    $author->setPassword(
-	    	$this->passwordEncoder->encodePassword($author,'12345')
-	    );
+    	foreach (self::USERS as $user){
+		    $author = new User();
+		    $author->setEmail($user['mail']);
+		    $author->setName($user['name']);
+		    $author->setUsername($user['username']);
+		    $author->setPassword(
+			    $this->passwordEncoder->encodePassword($author,$user['password'])
+		    );
 
-	    $this->addReference('admin_claw', $author);
+		    $this->addReference('user_'.$user['name'], $author);
 
-	    $manager->persist($author);
+		    $manager->persist($author);
+	    }
+
 	    $manager->flush();
     }
 
     public function loadBlogPosts(ObjectManager $manager)
     {
-    	$author = $this->getReference('admin_claw');
-
-	    $blogPost = new BlogPost();
-	    $blogPost->setTitle("Cosmodaughter");
-	    $blogPost->setPublished(new \DateTime("2018-07-01 12:00:00"));
-	    $blogPost->setCreated(new \DateTime("2018-07-01 12:00:00"));
-	    $blogPost->setAuthor($author);
-	    $blogPost->setContent("flame deamon");
-	    $blogPost->setSlug("she-darht-maul");
-
-	    $manager->persist($blogPost);
-
-	    $blogPost = new BlogPost();
-	    $blogPost->setTitle("Sylvia");
-	    $blogPost->setPublished(new \DateTime("2018-07-01 12:00:00"));
-	    $blogPost->setCreated(new \DateTime("2018-07-01 12:00:00"));
-	    $blogPost->setAuthor($author);
-	    $blogPost->setContent("mermaid enchant");
-	    $blogPost->setSlug("mermaid");
-
-	    $manager->persist($blogPost);
-
-	    $blogPost = new BlogPost();
-	    $blogPost->setTitle("Marta");
-	    $blogPost->setPublished(new \DateTime("2018-07-01 12:00:00"));
-	    $blogPost->setCreated(new \DateTime("2018-07-01 12:00:00"));
-	    $blogPost->setAuthor($author);
-	    $blogPost->setContent("flames flames!!");
-	    $blogPost->setSlug("marta-fire");
-
-	    $manager->persist($blogPost);
-
-	    $blogPost = new BlogPost();
-	    $blogPost->setTitle("Nuur");
-	    $blogPost->setPublished(new \DateTime("2018-07-01 12:00:00"));
-	    $blogPost->setCreated(new \DateTime("2018-07-01 12:00:00"));
-	    $blogPost->setAuthor($author);
-	    $blogPost->setContent("tribal biker");
-	    $blogPost->setSlug("tribal-biker");
-
-	    $manager->persist($blogPost);
-
-	    $blogPost = new BlogPost();
-	    $blogPost->setTitle("Sofia");
-	    $blogPost->setPublished(new \DateTime("2018-07-01 12:00:00"));
-	    $blogPost->setCreated(new \DateTime("2018-07-01 12:00:00"));
-	    $blogPost->setAuthor($author);
-	    $blogPost->setContent("A witch and his ball");
-	    $blogPost->setSlug("Sofia-gipsy");
-
-	    $manager->persist($blogPost);
-
 	    //loop with faker
 	    for ($i=0; $i < 100; $i++)
 	    {
@@ -111,6 +101,9 @@ class AppFixtures extends Fixture
 		    $blogPost->setTitle($this->faker->realText(30));
 		    $blogPost->setPublished($this->faker->dateTimeThisYear);
 		    $blogPost->setCreated($blogPost->getPublished());
+
+		    $author = $this->getRandomUser();
+
 		    $blogPost->setAuthor($author);
 		    $blogPost->setContent($this->faker->realText());
 		    $blogPost->setSlug($this->faker->slug);
@@ -125,13 +118,15 @@ class AppFixtures extends Fixture
 
     public function loadComments(ObjectManager $manager)
     {
-	    $author = $this->getReference('admin_claw');
-		for ( $i=0; $i < 100; $i++)
+	    for ( $i=0; $i < 100; $i++)
 		{
 			for	( $j=0; $j < rand(1,10); $j++)
 			{
 				$comment = new Comment();
 				$comment->setContent($this->faker->realText(50));
+
+				$author = $this->getRandomUser();
+
 				$comment->setAuthor($author);
 				$comment->setCreated($this->faker->dateTimeThisYear());
 				$comment->setBlogPost($this->getReference("blog_post".$i));
@@ -141,4 +136,11 @@ class AppFixtures extends Fixture
 		}
 		$manager->flush();
     }
+
+	/**
+	 * @return string
+	 */
+	protected function getRandomUser(): User {
+		return $this->getReference('user_' . self::USERS[ ( rand( 0, 5 ) ) ]['name']);
+	}
 }
