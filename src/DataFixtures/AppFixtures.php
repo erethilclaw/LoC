@@ -27,37 +27,43 @@ class AppFixtures extends Fixture
 			'username'=>'admin',
 			'name'=>'Claw',
 			'mail'=>'ernest.riccetto@gmail.com',
-			'password'=>'12345'
+			'password'=>'12345',
+			'roles'=>[User::ROLE_SUPERADMIN]
 		],
 		[
 			'username'=>'sylvia',
 			'name'=>'Sylvia',
 			'mail'=>'mermaid@gmail.com',
-			'password'=>'12345'
+			'password'=>'12345',
+			'roles'=>[User::ROLE_ADMIN]
 		],
 		[
 			'username'=>'marta_flames',
 			'name'=>'MartaFlames',
 			'mail'=>'MartaFlameso@gmail.com',
-			'password'=>'12345'
+			'password'=>'12345',
+			'roles'=>[User::ROLE_EDITOR]
 		],
 		[
 			'username'=>'cosmodaughter',
 			'name'=>'Cosmodaughter',
 			'mail'=>'Cosmodaughter@gmail.com',
-			'password'=>'12345'
+			'password'=>'12345',
+			'roles'=>[User::ROLE_WRITER]
 		],
 		[
 			'username'=>'gipsy_sereia',
 			'name'=>'Sofia',
 			'mail'=>'gipsy_sereia@gmail.com',
-			'password'=>'12345'
+			'password'=>'12345',
+			'roles'=>[User::ROLE_WRITER]
 		],
 		[
 			'username'=>'tribal_biker',
 			'name'=>'Nuur',
 			'mail'=>'Nuur@gmail.com',
-			'password'=>'12345'
+			'password'=>'12345',
+			'roles'=>[User::ROLE_COMMENTATOR]
 		]
 	];
 
@@ -80,6 +86,7 @@ class AppFixtures extends Fixture
 		    $author->setEmail($user['mail']);
 		    $author->setName($user['name']);
 		    $author->setUsername($user['username']);
+		    $author->setRoles($user['roles']);
 		    $author->setPassword(
 			    $this->passwordEncoder->encodePassword($author,$user['password'])
 		    );
@@ -102,7 +109,7 @@ class AppFixtures extends Fixture
 		    $blogPost->setPublished($this->faker->dateTimeThisYear);
 		    $blogPost->setCreated($blogPost->getPublished());
 
-		    $author = $this->getRandomUser();
+		    $author = $this->getRandomUser($blogPost);
 
 		    $blogPost->setAuthor($author);
 		    $blogPost->setContent($this->faker->realText());
@@ -125,7 +132,7 @@ class AppFixtures extends Fixture
 				$comment = new Comment();
 				$comment->setContent($this->faker->realText(50));
 
-				$author = $this->getRandomUser();
+				$author = $this->getRandomUser($comment);
 
 				$comment->setAuthor($author);
 				$comment->setCreated($this->faker->dateTimeThisYear());
@@ -140,7 +147,35 @@ class AppFixtures extends Fixture
 	/**
 	 * @return string
 	 */
-	protected function getRandomUser(): User {
-		return $this->getReference('user_' . self::USERS[ ( rand( 0, 5 ) ) ]['name']);
+	protected function getRandomUser($entity): User
+	{
+		$randomUser = self::USERS[ ( rand( 0, 5 ) ) ];
+
+		if ($entity instanceof BlogPost && !count(array_intersect(
+			$randomUser['roles'],
+				[
+					User::ROLE_SUPERADMIN,
+					User::ROLE_ADMIN,
+					User::ROLE_WRITER
+				]
+			)) )
+		{
+			return $this->getRandomUser($entity);
+		}
+
+		if ($entity instanceof Comment && !count(array_intersect(
+			$randomUser['roles'],
+				[
+					User::ROLE_SUPERADMIN,
+					User::ROLE_ADMIN,
+					User::ROLE_WRITER,
+					User::ROLE_COMMENTATOR
+				]
+			)) )
+		{
+			return $this->getRandomUser($entity);
+		}
+
+		return $this->getReference('user_' .$randomUser['name']);
 	}
 }
