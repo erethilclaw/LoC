@@ -58,7 +58,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"get","post","get-comment-with-author"})
+     * @Groups({"get","post","get-comment-with-author","get-blogpost-with-author"})
      * @Assert\NotBlank()
      * @Assert\Length(min="6", max="225")
      */
@@ -88,7 +88,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"get", "post", "put"})
+     * @Groups({"get", "post", "put","get-comment-with-author","get-blogpost-with-author"})
      * @Assert\NotBlank()
      * @Assert\Length(min="5", max="225")
      */
