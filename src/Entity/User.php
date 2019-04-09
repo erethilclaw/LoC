@@ -109,11 +109,12 @@ class User implements UserInterface
 
 	/**
 	 * @Groups({"put-reset-password"})
-	 * @Assert\NotBlank()
+	 * @Assert\NotBlank(groups={"put-reset-password"})
 	 * @Assert\Length(min="7", max="255")
 	 * @Assert\Regex(
 	 *     pattern="/(?=.*[A-Z])(?=.*[0-9]).{7,}/",
-	 *     message="Password must be 7 chars min, contain a digit, upper case and lower case letter"
+	 *     message="Password must be 7 chars min, contain a digit, upper case and lower case letter",
+	 *     groups={"put-reset-password"}
 	 * )
 	 */
     private $newPassword;
@@ -121,17 +122,18 @@ class User implements UserInterface
 	/**
 	 * @Assert\Expression(
 	 *     "this.getNewPassword() === this.getNewRetypedPassword()",
-	 *     message="Passwords don't match"
+	 *     message="Passwords don't match",
+	 *     groups={"put-reset-password"}
 	 * )
 	 * @Groups({"put-reset-password"})
-	 * @Assert\NotBlank()
+	 * @Assert\NotBlank(groups={"put-reset-password"})
 	 */
 	private $newRetypedPassword;
 
 	/**
-	 * @Assert\NotBlank()
+	 * @Assert\NotBlank(groups={"put-reset-password"})
 	 * @Groups({"put-reset-password"})
-	 * @UserPassword()
+	 * @UserPassword(groups={"put-reset-password"})
 	 */
 	private $oldPassword;
 
@@ -176,15 +178,21 @@ class User implements UserInterface
     private $roles;
 
 	/**
-	 * User constructor.
-	 *
-	 * @param $posts
-	 * @param $comments
+	 * @ORM\Column(type="boolean")
 	 */
+	private $enabled;
+
+	/**
+	 * @ORM\Column(type="string", length=40, nullable=true)
+	 */
+	private $confirmationToken;
+
 	public function __construct() {
 		$this->posts    = new ArrayCollection();
 		$this->comments = new ArrayCollection();
 		$this->roles = self::DEFAULT_ROLES;
+		$this->enabled = false;
+		$this->confirmationToken = null;
 	}
 
 
@@ -350,4 +358,26 @@ class User implements UserInterface
 	{
 		$this->passwordChangeDate = $passwordChangeDate;
 	}
+
+	public function getEnabled()
+	{
+		return $this->enabled;
+	}
+
+	public function setEnabled( $enabled ): void
+	{
+		$this->enabled = $enabled;
+	}
+
+	public function getConfirmationToken()
+	{
+		return $this->confirmationToken;
+	}
+
+	public function setConfirmationToken( $confirmationToken ): void
+	{
+		$this->confirmationToken = $confirmationToken;
+	}
+
+
 }

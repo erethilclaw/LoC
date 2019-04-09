@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\BlogPost;
 use App\Entity\Comment;
 use App\Entity\User;
+use App\Security\TokenGenerator;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Faker\Factory;
@@ -28,48 +29,62 @@ class AppFixtures extends Fixture
 			'name'=>'Claw',
 			'mail'=>'ernest.riccetto@gmail.com',
 			'password'=>'12345',
-			'roles'=>[User::ROLE_SUPERADMIN]
+			'roles'=>[User::ROLE_SUPERADMIN],
+			'enabled'=> true
 		],
 		[
 			'username'=>'sylvia',
 			'name'=>'Sylvia',
 			'mail'=>'mermaid@gmail.com',
 			'password'=>'12345',
-			'roles'=>[User::ROLE_ADMIN]
+			'roles'=>[User::ROLE_ADMIN],
+			'enabled'=> true
 		],
 		[
 			'username'=>'marta_flames',
 			'name'=>'MartaFlames',
 			'mail'=>'MartaFlameso@gmail.com',
 			'password'=>'12345',
-			'roles'=>[User::ROLE_EDITOR]
+			'roles'=>[User::ROLE_EDITOR],
+			'enabled'=> false
 		],
 		[
 			'username'=>'cosmodaughter',
 			'name'=>'Cosmodaughter',
 			'mail'=>'Cosmodaughter@gmail.com',
 			'password'=>'12345',
-			'roles'=>[User::ROLE_WRITER]
+			'roles'=>[User::ROLE_WRITER],
+			'enabled'=> true
 		],
 		[
 			'username'=>'gipsy_sereia',
 			'name'=>'Sofia',
 			'mail'=>'gipsy_sereia@gmail.com',
 			'password'=>'12345',
-			'roles'=>[User::ROLE_WRITER]
+			'roles'=>[User::ROLE_WRITER],
+			'enabled'=> true
 		],
 		[
 			'username'=>'tribal_biker',
 			'name'=>'Nuur',
 			'mail'=>'Nuur@gmail.com',
 			'password'=>'12345',
-			'roles'=>[User::ROLE_COMMENTATOR]
+			'roles'=>[User::ROLE_COMMENTATOR],
+			'enabled'=> true
 		]
 	];
+	/**
+	 * @var TokenGenerator
+	 */
+	private $token_generator;
 
-	public function __construct(UserPasswordEncoderInterface $password_encoder) {
+	public function __construct(
+		UserPasswordEncoderInterface $password_encoder,
+		TokenGenerator $token_generator)
+	{
 		$this->passwordEncoder = $password_encoder;
 		$this->faker = \Faker\Factory::create();
+		$this->token_generator = $token_generator;
 	}
 
 	public function load(ObjectManager $manager)
@@ -90,6 +105,13 @@ class AppFixtures extends Fixture
 		    $author->setPassword(
 			    $this->passwordEncoder->encodePassword($author,$user['password'])
 		    );
+			$author->setEnabled($user['enabled']);
+
+			if (!$author->getEnabled()){
+				$author->setConfirmationToken(
+					$this->token_generator->getRandomSecureToken()
+				);
+			}
 
 		    $this->addReference('user_'.$user['name'], $author);
 
