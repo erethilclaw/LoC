@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<html>
+    <body>
+       <h3>hello {{ user.getName() }}</h3>
+       <p>please confirm your email by clicking <a href="{{ url('default-confirm-token', {'token': user.getConfirmationToken()} ) }}">here</a></p>
+    </body>
+</html>
