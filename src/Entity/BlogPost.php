@@ -89,6 +89,14 @@ class BlogPost implements AuthoredEntityInterface, CreatedDateEntityInterface
 	 */
 	private $comments;
 
+	/**
+	 * @ORM\ManyToMany(targetEntity="App\Entity\Image")
+	 * @ORM\JoinTable()
+	 * @ApiSubresource()
+	 * @Groups({"post", "get-blogpost-with-author"})
+	 */
+	private $images;
+
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\NotBlank()
@@ -100,6 +108,7 @@ class BlogPost implements AuthoredEntityInterface, CreatedDateEntityInterface
 	public function __construct()
 	{
 		$this->comments = new ArrayCollection();
+		$this->images = new ArrayCollection();
 	}
 
 	public function getId(): ?int
@@ -182,5 +191,20 @@ class BlogPost implements AuthoredEntityInterface, CreatedDateEntityInterface
 	public function getComments(): Collection
 	{
 		return $this->comments;
+	}
+
+	public function getImages(): Collection
+	{
+		return $this->images;
+	}
+
+	public function addImage(Image $image)
+	{
+		$this->images->add($image);
+	}
+
+	public function removeImage(Image $image)
+	{
+		$this->images->removeElement($image);
 	}
 }
