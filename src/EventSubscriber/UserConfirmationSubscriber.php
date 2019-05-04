@@ -27,7 +27,7 @@ class UserConfirmationSubscriber implements EventSubscriberInterface
 
 	public static function getSubscribedEvents() {
 		return [
-			KernelEvents::VIEW => ['confirmUser', EventPriorities::PRE_VALIDATE]
+			KernelEvents::VIEW => ['confirmUser', EventPriorities::POST_VALIDATE]
 		];
 	}
 
