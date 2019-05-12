@@ -103,13 +103,13 @@ class BlogPost implements AuthoredEntityInterface, CreatedDateEntityInterface
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"get-blogpost-with-author"})
+     *
      */
     private $created;
 
     /**
      * @ORM\Column(type="datetime")
      * @Assert\NotBlank()
-     * @Assert\DateTime()
      * @Groups({"post","get-blogpost-with-author"})
      */
     private $published;
@@ -223,7 +223,7 @@ class BlogPost implements AuthoredEntityInterface, CreatedDateEntityInterface
         return $this;
     }
 
-	public function getAuthor(): User
+	public function getAuthor(): ?User
 	{
 		return $this->author;
 	}
@@ -253,5 +253,10 @@ class BlogPost implements AuthoredEntityInterface, CreatedDateEntityInterface
 	public function removeImage(Image $image)
 	{
 		$this->images->removeElement($image);
+	}
+
+	public function __toString(): string
+	{
+		return $this->title;
 	}
 }

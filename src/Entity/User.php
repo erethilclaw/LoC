@@ -381,5 +381,8 @@ class User implements UserInterface
 		$this->confirmationToken = $confirmationToken;
 	}
 
-
+	public function __toString(): string
+	{
+		return $this->username;
+	}
 }
