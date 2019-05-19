@@ -16,8 +16,26 @@
             "src/Entity/.gitignore"
         ]
     },
+    "behat/behat": {
+        "version": "v3.5.0"
+    },
+    "behat/gherkin": {
+        "version": "v4.6.0"
+    },
+    "behat/mink": {
+        "version": "1.7.x-dev"
+    },
     "behat/transliterator": {
         "version": "v1.2.0"
+    },
+    "coduo/php-matcher": {
+        "version": "3.1.2"
+    },
+    "coduo/php-to-string": {
+        "version": "2.0.1"
+    },
+    "container-interop/container-interop": {
+        "version": "1.2.0"
     },
     "doctrine/annotations": {
         "version": "1.0",
@@ -180,6 +198,9 @@
     "ocramius/proxy-manager": {
         "version": "2.2.2"
     },
+    "openlss/lib-array2xml": {
+        "version": "0.0.10"
+    },
     "pagerfanta/pagerfanta": {
         "version": "v2.1.1"
     },
@@ -225,6 +246,9 @@
     "symfony/cache": {
         "version": "v4.2.4"
     },
+    "symfony/class-loader": {
+        "version": "v3.4.27"
+    },
     "symfony/config": {
         "version": "v4.2.4"
     },
@@ -243,6 +267,9 @@
     },
     "symfony/contracts": {
         "version": "v1.0.2"
+    },
+    "symfony/css-selector": {
+        "version": "v4.2.8"
     },
     "symfony/debug": {
         "version": "v4.2.4"

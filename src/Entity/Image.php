@@ -14,7 +14,8 @@ use App\Controller\UploadImageAction;
  * @Vich\Uploadable()
  * @ApiResource(
  *   attributes={
- *          "order"={"id":"DESC"}
+ *          "order"={"id":"DESC"},
+ *          "formats"={"json", "jsonld", "form"={"multipart/form-data"}}
  *     },
  *     collectionOperations={
  *          "get",
